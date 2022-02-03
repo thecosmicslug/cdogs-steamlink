@@ -1,7 +1,7 @@
 /*
 	C-Dogs SDL
 	A port of the legendary (and fun) action/arcade cdogs.
-	Copyright (c) 2013-2014, 2016-2017, 2020 Cong Xu
+	Copyright (c) 2013-2014, 2016-2017, 2020, 2022 Cong Xu
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without
@@ -33,15 +33,17 @@
 
 typedef struct
 {
-	const Pic *guideImage;
-	uint8_t guideImageAlpha;
-} GrafxDrawExtra;
+	bool Editor;
+	const Pic *GuideImage;
+	uint8_t GuideImageAlpha;
+	bool HUD;
+} DrawBufferArgs;
 
 void GrafxDrawBackground(
 	GraphicsDevice *g, DrawBuffer *buffer, const HSV tint,
-	const struct vec2 pos, GrafxDrawExtra *extra);
+	const struct vec2 pos, const DrawBufferArgs *args);
 void GrafxRedrawBackground(GraphicsDevice *g, const struct vec2 pos);
 void GrafxMakeBackground(
 	GraphicsDevice *device, DrawBuffer *buffer, Campaign *co,
 	struct MissionOptions *mo, Map *map, HSV tint, const bool isEditor,
-	struct vec2 pos, GrafxDrawExtra *extra);
+	struct vec2 pos, const DrawBufferArgs *args);

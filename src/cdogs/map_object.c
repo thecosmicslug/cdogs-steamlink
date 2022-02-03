@@ -295,6 +295,7 @@ void MapObjectsLoadJSON(CArray *classes, json_t *root)
 }
 static bool TryLoadMapObject(MapObject *m, json_t *node, const int version)
 {
+	char *tmp = NULL;
 	memset(m, 0, sizeof *m);
 
 	m->Name = GetString(node, "Name");
@@ -357,7 +358,6 @@ static bool TryLoadMapObject(MapObject *m, json_t *node, const int version)
 		json_t *wreckNode = json_find_first_label(node, "Wreck");
 		if (wreckNode != NULL && wreckNode->child != NULL)
 		{
-			char *tmp = NULL;
 			LoadStr(&m->Wreck.MO, wreckNode->child, "MapObject");
 			tmp = NULL;
 			LoadStr(&tmp, wreckNode->child, "Sound");
@@ -394,6 +394,9 @@ static bool TryLoadMapObject(MapObject *m, json_t *node, const int version)
 
 	LoadBool(&m->DrawBelow, node, "DrawBelow");
 	LoadBool(&m->DrawAbove, node, "DrawAbove");
+	
+	LoadStr(&m->FootstepSound, node, "FootstepSound");
+	LoadColor(&m->FootprintMask, node, "FootprintMask");
 
 	// Special types
 	JSON_UTILS_LOAD_ENUM(m->Type, node, "Type", StrMapObjectType);
@@ -403,7 +406,7 @@ static bool TryLoadMapObject(MapObject *m, json_t *node, const int version)
 		// Do nothing
 		break;
 	case MAP_OBJECT_TYPE_PICKUP_SPAWNER: {
-		char *tmp = GetString(node, "Pickup");
+		tmp = GetString(node, "Pickup");
 		m->u.PickupClass = StrPickupClass(tmp);
 		CFREE(tmp);
 	}
@@ -554,6 +557,7 @@ void MapObjectsClear(CArray *classes)
 		CFREE(c->Name);
 		CFREE(c->Wreck.MO);
 		CFREE(c->Wreck.Bullet);
+		CFREE(c->FootstepSound);
 		CArrayTerminate(&c->DestroyGuns);
 		CArrayTerminate(&c->DestroySpawn);
 	}

@@ -22,7 +22,7 @@
 	This file incorporates work covered by the following copyright and
 	permission notice:
 
-	Copyright (c) 2013-2021 Cong Xu
+	Copyright (c) 2013-2022 Cong Xu
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without
@@ -70,6 +70,8 @@
 
 #include "briefing_screens.h"
 #include "hiscores.h"
+#include "loading_screens.h"
+#include "prep.h"
 #include "screens_end.h"
 
 static void PlayerSpecialCommands(TActor *actor, const int cmd)
@@ -142,11 +144,14 @@ static void RunGameTerminate(GameLoopData *data)
 }
 static void RunGameOnEnter(GameLoopData *data)
 {
+	LoadingScreenDraw(&gLoadingScreen, "Starting game...", 1.0f);
+
 	RunGameData *rData = data->Data;
 
 	RunGameReset(rData);
 
-	MapBuild(rData->map, rData->m->missionData, rData->co, rData->m->index);
+	CampaignSeedRandom(rData->co);
+	MapBuild(rData->map, rData->m->missionData, !rData->co->IsClient, rData->m->index, rData->co->Entry.Mode, &rData->co->Setting.characters);
 
 	// Seed random if PVP mode (otherwise players will always spawn in same
 	// position)
@@ -254,6 +259,8 @@ static void RunGameOnExit(GameLoopData *data)
 	RunGameData *rData = data->Data;
 
 	LOG(LM_MAIN, LL_INFO, "Game finished");
+
+	LoadingScreenDraw(&gLoadingScreen, "Debriefing...", 1.0f);
 
 	// Flush events
 	HandleGameEvents(&gGameEvents, NULL, NULL, NULL, NULL);
@@ -761,6 +768,7 @@ void GameUpdate(RunGameData *data, const int ticksPerFrame, SoundDevice *sd)
 	UpdateMobileObjects(ticksPerFrame);
 	PickupsUpdate(&gPickups, ticksPerFrame);
 	ParticlesUpdate(&gParticles, ticksPerFrame);
+	MapUpdate(data->map);
 
 	UpdateWatches(&data->map->triggers, ticksPerFrame);
 

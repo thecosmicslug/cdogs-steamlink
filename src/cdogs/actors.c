@@ -71,6 +71,7 @@
 #include "game_events.h"
 #include "gamedata.h"
 #include "log.h"
+#include "material.h"
 #include "mission.h"
 #include "pic_manager.h"
 #include "pickup.h"
@@ -98,6 +99,7 @@
 #define GRIMACE_HIT_TICKS 39
 #define GRIMACE_MELEE_TICKS 19
 #define DAMAGE_TEXT_DISTANCE_RESET_THRESHOLD (ACTOR_W / 2)
+#define FOOTPRINT_MAX 8
 
 CArray gPlayerIds;
 
@@ -178,22 +180,71 @@ void UpdateActorState(TActor *actor, int ticks)
 	{
 		actor->DrawRadians -= (float)MIN(DRAW_RADIAN_SPEED * ticks, dr);
 	}
+	
+	const struct vec2i tilePos = Vec2ToTile(actor->Pos);
+	const Tile *t = MapGetTile(&gMap, tilePos);
 
 	// Footstep sounds
 	// Step on 2 and 6
 	// TODO: custom animation and footstep frames
-	if (ConfigGetBool(&gConfig, "Sound.Footsteps") &&
-		actor->anim.Type == ACTORANIMATION_WALKING &&
-		(AnimationGetFrame(&actor->anim) == 2 ||
-		 AnimationGetFrame(&actor->anim) == 6) &&
-		actor->anim.newFrame)
+	const int frame = AnimationGetFrame(&actor->anim);
+	const bool isFootstepFrame = actor->anim.Type == ACTORANIMATION_WALKING && (frame == 2 || frame == 6) && actor->anim.newFrame;
+	if (isFootstepFrame)
 	{
-		GameEvent es = GameEventNew(GAME_EVENT_SOUND_AT);
-		const CharacterClass *cc = ActorGetCharacter(actor)->Class;
-		sprintf(es.u.SoundAt.Sound, "footsteps/%s", cc->Footsteps);
-		es.u.SoundAt.Pos = Vec2ToNet(actor->thing.Pos);
-		es.u.SoundAt.Distance = cc->FootstepsDistancePlus;
-		GameEventsEnqueue(&gGameEvents, es);
+
+		if (ConfigGetBool(&gConfig, "Sound.Footsteps"))
+		{
+			GameEvent e = GameEventNew(GAME_EVENT_SOUND_AT);
+			const CharacterClass *cc = ActorGetCharacter(actor)->Class;
+			MatGetFootstepSound(cc, t, e.u.SoundAt.Sound);
+			e.u.SoundAt.Pos = Vec2ToNet(actor->thing.Pos);
+			e.u.SoundAt.Distance = cc->FootstepsDistancePlus;
+			GameEventsEnqueue(&gGameEvents, e);
+		}
+
+		// See if we've stepped on something that leaves footprints
+		const color_t footprintMask = MatGetFootprintMask(t);
+		if (footprintMask.a != 0)
+		{
+			actor->footprintMask = footprintMask;
+			actor->footprintCounter = FOOTPRINT_MAX;
+		}
+
+		// Footprint particle
+		if (actor->footprintCounter > 0)
+		{
+			GameEvent e = GameEventNew(GAME_EVENT_ADD_PARTICLE);
+			e.u.AddParticle.Class =
+				StrParticleClass(&gParticleClasses, "footprint");
+			const struct vec2 footOffset = svec2_scale(
+				Vec2FromRadiansScaled(actor->DrawRadians + MPI_2),
+				frame == 2 ? 3.f : -3.f);
+			e.u.AddParticle.Pos = svec2_subtract(actor->thing.Pos, footOffset);
+			e.u.AddParticle.Angle = actor->DrawRadians;
+			e.u.AddParticle.Mask = actor->footprintMask;
+			// Fade footprint away gradually
+			e.u.AddParticle.Mask.a = (uint8_t)MIN(
+				actor->footprintCounter * e.u.AddParticle.Mask.a /
+					FOOTPRINT_MAX,
+				255);
+			GameEventsEnqueue(&gGameEvents, e);
+			actor->footprintCounter--;
+		}
+	}
+
+	// Damage when on special tiles
+	if (!gCampaign.IsClient &&
+		actor->anim.Type == ACTORANIMATION_WALKING ? isFootstepFrame : (gMission.time % FPS_FRAMELIMIT) == 0)
+	{
+	   const BulletClass *b = MatGetDamageBullet(t);
+	   if (b != NULL)
+	   {
+		   GameEvent e = GameEventNew(GAME_EVENT_THING_DAMAGE);
+		   e.u.ThingDamage.UID = actor->uid;
+		   e.u.ThingDamage.Kind = KIND_CHARACTER;
+		   BulletToDamageEvent(b, &e);
+		   GameEventsEnqueue(&gGameEvents, e);
+	   }
 	}
 
 	// Animation
@@ -505,8 +556,8 @@ static void CheckTrigger(const TActor *a, const Map *map)
 	const int keyFlags =
 		(a->flags & FLAGS_UNLOCK_DOORS) ? -1 : gMission.KeyFlags;
 	CA_FOREACH(Trigger *, tp, t->triggers)
-	if (!TriggerTryActivate(*tp, keyFlags, tilePos) &&
-		(*tp)->isActive && TriggerCannotActivate(*tp) && showLocked)
+	if (!TriggerTryActivate(*tp, keyFlags, tilePos) && (*tp)->isActive &&
+		TriggerCannotActivate(*tp) && showLocked)
 	{
 		TriggerSetCannotActivate(*tp);
 		GameEvent s = GameEventNew(GAME_EVENT_ADD_PARTICLE);
@@ -804,8 +855,7 @@ void ActorPilot(const NActorPilot ap)
 		CASSERT(vehicle->pilotUID != -1, "doesn't have pilot");
 		vehicle->pilotUID = -1;
 		char buf[256];
-		sprintf(
-			buf, "footsteps/%s", ActorGetCharacter(pilot)->Class->Footsteps);
+		MatGetFootstepSound(ActorGetCharacter(pilot)->Class, NULL, buf);
 		SoundPlayAt(&gSoundDevice, StrSound(buf), vehicle->Pos);
 	}
 }

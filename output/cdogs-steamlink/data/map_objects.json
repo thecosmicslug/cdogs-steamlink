@@ -19,6 +19,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Outside", "OneWall"]
     },
     {
@@ -39,6 +40,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Outside", "OneWall"]
     },
     {
@@ -59,6 +61,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Outside", "OneWall"]
     },
     {
@@ -109,6 +112,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Outside", "NoWalls"]
     },
     {
@@ -139,6 +143,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Outside", "NoWalls"]
     },
     {
@@ -169,6 +174,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Outside", "NoWalls"]
     },
     {
@@ -195,6 +201,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Inside", "OneOrMoreWalls", "FreeInFront"]
     },
     {
@@ -225,6 +232,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Inside", "OneOrMoreWalls", "FreeInFront"]
     },
     {
@@ -252,6 +260,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/grass",
       "Flags": ["Inside", "OneOrMoreWalls"]
     },
     {
@@ -279,6 +288,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/grass",
       "Flags": ["Inside", "OneOrMoreWalls"]
     },
     {
@@ -307,6 +317,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/grass",
       "Flags": ["Inside", "OneOrMoreWalls"]
     },
     {
@@ -327,6 +338,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Inside", "NoWalls"]
     },
     {
@@ -347,6 +359,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Inside", "NoWalls"]
     },
     {
@@ -407,6 +420,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Inside", "NoWalls"]
     },
     {
@@ -427,6 +441,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Inside", "NoWalls"]
     },
     {
@@ -450,6 +465,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Inside", "NoWalls"]
     },
     {
@@ -500,6 +516,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Inside", "NoWalls"]
     },
     {
@@ -521,6 +538,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Inside", "NoWalls"]
     },
     {
@@ -578,6 +596,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Inside", "NoWalls"]
     },
     {
@@ -622,6 +641,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["NoWalls"]
     },
     {
@@ -656,6 +676,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Outside", "NoWalls"]
     },
     {
@@ -691,6 +712,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Outside", "NoWalls"]
     },
     {
@@ -721,6 +743,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Outside", "OneWall"]
     },
     {
@@ -827,6 +850,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Outside", "OneWall"]
     },
     {
@@ -861,6 +885,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Outside", "OneWall"]
     },
     {
@@ -894,6 +919,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Outside", "OneWall"]
     },
     {
@@ -940,6 +966,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Inside", "OneOrMoreWalls", "FreeInFront"]
     },
     {
@@ -1015,6 +1042,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Inside", "OneOrMoreWalls", "FreeInFront"]
     },
     {
@@ -1073,7 +1101,9 @@
         "TicksPerFrame": 20
       },
       "Health": 0,
-      "DrawBelow": true
+      "DrawBelow": true,
+      "FootstepSound": "footsteps/water",
+      "FootprintMask": "00ac00"
     },
     {
       "Name": "egg2",
@@ -1098,7 +1128,9 @@
         "Pic": "egg2_wreck"
       },
       "Health": 0,
-      "DrawBelow": true
+      "DrawBelow": true,
+      "FootstepSound": "footsteps/water",
+      "FootprintMask": "6c5820"
     },
     {
       "Name": "tree",
@@ -1120,6 +1152,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/grass",
       "Flags": ["Outside", "NoWalls"]
     },
     {
@@ -1141,6 +1174,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/grass",
       "Flags": ["Outside", "NoWalls"]
     },
     {
@@ -1163,6 +1197,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/grass",
       "Flags": ["Outside", "NoWalls"]
     },
     {
@@ -1201,6 +1236,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Outside", "OneWall"]
     },
     {
@@ -1229,6 +1265,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Outside", "OneWall"]
     },
     {
@@ -1257,6 +1294,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Outside", "OneWall"]
     },
     {
@@ -1286,6 +1324,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Outside", "OneWall"]
     },
     {
@@ -1332,6 +1371,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Outside", "OneWall"]
     },
     {
@@ -1355,7 +1395,8 @@
         "Pic": "table_wood_wreck"
       },
       "Health": 0,
-      "DrawBelow": true
+      "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel"
     },
     {
       "Name": "box3_red",
@@ -1410,6 +1451,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Inside"]
     },
     {
@@ -1440,6 +1482,7 @@
       },
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/gravel",
       "Flags": ["Inside", "OneOrMoreWalls", "FreeInFront"]
     },
     {
@@ -1693,6 +1736,26 @@
       "Flags": ["OnWall"]
     },
     {
+      "Name": "red_relief",
+      "Pic": {
+        "Type": "Normal",
+        "Pic": "red_relief"
+      },
+      "Offset": [-6, -10],
+      "Health": 0,
+      "Flags": ["OnWall"]
+    },
+    {
+      "Name": "blue_relief",
+      "Pic": {
+        "Type": "Normal",
+        "Pic": "blue_relief"
+      },
+      "Offset": [-6, -10],
+      "Health": 0,
+      "Flags": ["OnWall"]
+    },
+    {
       "Name": "wall_vent",
       "Pic": {
         "Type": "Normal",
@@ -1710,7 +1773,9 @@
       },
       "Offset": [-6, -3],
       "Health": 0,
-      "DrawBelow": true
+      "DrawBelow": true,
+      "FootstepSound": "footsteps/water",
+      "FootprintMask": "340000"
     },
     {
       "Name": "bones",
@@ -1747,7 +1812,9 @@
       },
       "Offset": [-6, -3],
       "Health": 0,
-      "DrawBelow": true
+      "DrawBelow": true,
+      "FootstepSound": "footsteps/water",
+      "FootprintMask": "ac0000"
     },
     {
       "Name": "skull",
@@ -1778,7 +1845,9 @@
       },
       "Offset": [-8, -3],
       "Health": 0,
-      "DrawBelow": true
+      "DrawBelow": true,
+      "FootstepSound": "footsteps/water",
+      "FootprintMask": "330000"
     },
     {
       "Name": "blood1",
@@ -1789,7 +1858,9 @@
       },
       "Offset": [-8, -3],
       "Health": 0,
-      "DrawBelow": true
+      "DrawBelow": true,
+      "FootstepSound": "footsteps/water",
+      "FootprintMask": "330000"
     },
     {
       "Name": "blood2",
@@ -1800,7 +1871,9 @@
       },
       "Offset": [-8, -3],
       "Health": 0,
-      "DrawBelow": true
+      "DrawBelow": true,
+      "FootstepSound": "footsteps/water",
+      "FootprintMask": "330000"
     },
     {
       "Name": "blood3",
@@ -1811,7 +1884,9 @@
       },
       "Offset": [-8, -3],
       "Health": 0,
-      "DrawBelow": true
+      "DrawBelow": true,
+      "FootstepSound": "footsteps/water",
+      "FootprintMask": "330000"
     },
     {
       "Name": "blood4",
@@ -1822,7 +1897,9 @@
       },
       "Offset": [-8, -3],
       "Health": 0,
-      "DrawBelow": true
+      "DrawBelow": true,
+      "FootstepSound": "footsteps/water",
+      "FootprintMask": "330000"
     },
     {
       "Name": "goo",
@@ -1832,7 +1909,9 @@
       },
       "Offset": [-8, -6],
       "Health": 0,
-      "DrawBelow": true
+      "DrawBelow": true,
+      "FootstepSound": "footsteps/water",
+      "FootprintMask": "207020"
     },
     {
       "Name": "drain0",
@@ -1843,6 +1922,7 @@
       "Offset": [-8, -6],
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/metal",
       "DamageSmoke": {
         "HealthThreshold": 1.0
       }
@@ -1856,6 +1936,7 @@
       "Offset": [-8, -6],
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/metal",
       "DamageSmoke": {
         "HealthThreshold": 1.0
       }
@@ -1869,6 +1950,7 @@
       "Offset": [-8, -6],
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/metal",
       "DamageSmoke": {
         "HealthThreshold": 1.0
       }
@@ -1881,7 +1963,9 @@
       },
       "Offset": [-8, -6],
       "Health": 0,
-      "DrawBelow": true
+      "DrawBelow": true,
+      "FootstepSound": "footsteps/water",
+      "FootprintMask": "00000099"
     },
     {
       "Name": "health spawner",
@@ -1893,6 +1977,7 @@
       "Offset": [-8, -6],
       "Health": 0,
       "DrawBelow": true,
+      "FootstepSound": "footsteps/tile",
       "Type": "PickupSpawner",
       "Pickup": "health"
     },
@@ -1905,7 +1990,8 @@
       },
       "Offset": [-8, -6],
       "Health": 0,
-      "DrawBelow": true
+      "DrawBelow": true,
+      "FootstepSound": "footsteps/metal"
     },
     {
       "Name": "wscreen1",

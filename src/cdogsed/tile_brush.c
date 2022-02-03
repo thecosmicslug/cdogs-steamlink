@@ -1,7 +1,7 @@
 /*
 	C-Dogs SDL
 	A port of the legendary (and fun) action/arcade cdogs.
-	Copyright (c) 2019-2020 Cong Xu
+	Copyright (c) 2019-2021 Cong Xu
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,48 @@
 #define ROW_HEIGHT 25
 #define OPS_HEIGHT 35
 
+static const char *IndexBulletClassName(const int i)
+{
+	CASSERT(
+		i >= 0 && i < (int)gBulletClasses.Classes.size +
+						  (int)gBulletClasses.CustomClasses.size,
+		"Bullet index out of bounds");
+	const BulletClass *b;
+	if (i < (int)gBulletClasses.Classes.size)
+	{
+		b = CArrayGet(&gBulletClasses.Classes, i);
+	}
+	else
+	{
+		b = CArrayGet(&gBulletClasses.CustomClasses, i - gBulletClasses.Classes.size);
+	}
+	return b->Name;
+}
+static int BulletClassIndex(const BulletClass *b)
+{
+	if (b == NULL)
+	{
+		return -1;
+	}
+	int i = 0;
+	CA_FOREACH(const BulletClass, b2, gBulletClasses.Classes)
+	if (b == b2)
+	{
+		return i;
+	}
+	i++;
+	CA_FOREACH_END()
+	CA_FOREACH(const BulletClass, b2, gBulletClasses.CustomClasses)
+	if (b == b2)
+	{
+		return i;
+	}
+	i++;
+	CA_FOREACH_END()
+	CASSERT(false, "cannot find bullet");
+	return -1;
+}
+
 typedef struct
 {
 	struct nk_context *ctx;
@@ -48,6 +90,7 @@ typedef struct
 	char *floorStyles;
 	char *wallStyles;
 	char *doorStyles;
+	char *bullets;
 	CArray texIdsFloorStyles;
 	CArray texIdsWallStyles;
 	CArray texIdsDoorStyles;
@@ -63,7 +106,7 @@ static int FloorStyleIndex(const char *style);
 static int WallStyleIndex(const char *style);
 static int DoorStyleIndex(const char *style);
 static const TileClass *GetOrAddTileClass(
-	const TileClass *base, PicManager *pm, const char *style,
+	map_t c, const TileClass *base, PicManager *pm, const char *style,
 	const color_t mask, const color_t maskAlt);
 static bool Draw(SDL_Window *win, struct nk_context *ctx, void *data);
 EditorResult TileBrush(
@@ -102,25 +145,26 @@ EditorResult TileBrush(
 	// TODO: tile previews show wrong icons; possibly due to clashes between
 	// SDL2 textures and OGL textures. Load SDL2 textures first and in a second
 	// run, load OGL textures
+	data.bullets = GetClassNames(BulletClassesCount(&gBulletClasses), IndexBulletClassName);
 	TexArrayInit(&data.texIdsFloorStyles, pm->tileStyleNames.size);
 	CA_FOREACH(const GLuint, texid, data.texIdsFloorStyles)
 	const char *style = *(char **)CArrayGet(&pm->tileStyleNames, _ca_index);
 	const TileClass *styleClass = GetOrAddTileClass(
-		&gTileFloor, pm, style, colorBattleshipGrey, colorOfficeGreen);
+		gMap.TileClasses, &gTileFloor, pm, style, colorBattleshipGrey, colorOfficeGreen);
 	LoadTexFromPic(*texid, styleClass->Pic);
 	CA_FOREACH_END()
 	TexArrayInit(&data.texIdsWallStyles, pm->wallStyleNames.size);
 	CA_FOREACH(const GLuint, texid, data.texIdsWallStyles)
 	const char *style = *(char **)CArrayGet(&pm->wallStyleNames, _ca_index);
 	const TileClass *styleClass = GetOrAddTileClass(
-		&gTileWall, pm, style, colorGravel, colorOfficeGreen);
+		gMap.TileClasses, &gTileWall, pm, style, colorGravel, colorOfficeGreen);
 	LoadTexFromPic(*texid, styleClass->Pic);
 	CA_FOREACH_END()
 	TexArrayInit(&data.texIdsDoorStyles, pm->doorStyleNames.size);
 	CA_FOREACH(const GLuint, texid, data.texIdsDoorStyles)
 	const char *style = *(char **)CArrayGet(&pm->doorStyleNames, _ca_index);
 	const TileClass *styleClass =
-		GetOrAddTileClass(&gTileDoor, pm, style, colorWhite, colorOfficeGreen);
+		GetOrAddTileClass(gMap.TileClasses, &gTileDoor, pm, style, colorWhite, colorOfficeGreen);
 	LoadTexFromPic(*texid, styleClass->Pic);
 	CA_FOREACH_END()
 
@@ -134,6 +178,7 @@ EditorResult TileBrush(
 	CFREE(data.floorStyles);
 	CFREE(data.wallStyles);
 	CFREE(data.doorStyles);
+	CFREE(data.bullets);
 	TexArrayTerminate(&data.texIdsFloorStyles);
 	TexArrayTerminate(&data.texIdsWallStyles);
 	TexArrayTerminate(&data.texIdsDoorStyles);
@@ -251,6 +296,8 @@ static void DrawTileTypeSelect(
 	struct nk_context *ctx, TileBrushData *tbData, TileClass *selectedTC);
 static void DrawTileStyleSelect(
 	struct nk_context *ctx, TileBrushData *tbData, TileClass *selectedTC);
+static void DrawTileBulletSelect(
+	struct nk_context *ctx, TileBrushData *tbData, TileClass *selectedTC);
 static void DrawTilePropsSidebar(
 	struct nk_context *ctx, TileBrushData *tbData, TileClass *selectedTC)
 {
@@ -261,6 +308,29 @@ static void DrawTilePropsSidebar(
 	if (selectedTC->Type != TILE_CLASS_NOTHING)
 	{
 		DrawTileStyleSelect(ctx, tbData, selectedTC);
+		if (selectedTC->Type == TILE_CLASS_FLOOR)
+		{
+			bool hasDamage = StrBulletClass(selectedTC->DamageBullet) != NULL;
+			if (DrawCheckbox(
+				 ctx, "Damaging", "Whether actors take damage on this tile",
+				 &hasDamage))
+			{
+				CFREE(selectedTC->DamageBullet);
+				if (hasDamage)
+				{
+					CSTRDUP(selectedTC->DamageBullet, IndexBulletClassName(0));
+				}
+				else
+				{
+					selectedTC->DamageBullet = NULL;
+				}
+				tbData->result |= EDITOR_RESULT_CHANGED_AND_RELOAD;
+			}
+			if (hasDamage)
+			{
+				DrawTileBulletSelect(ctx, tbData, selectedTC);
+			}
+		}
 		// Changing colour requires regenerating tile mask pics
 		if (ColorPicker(ctx, ROW_HEIGHT, "Primary Color", &selectedTC->Mask))
 		{
@@ -376,6 +446,28 @@ static void DrawTileStyleSelect(
 	}
 }
 
+static void DrawTileBulletSelect(
+	struct nk_context *ctx, TileBrushData *tbData, TileClass *selectedTC)
+{
+	struct nk_rect bounds = nk_widget_bounds(ctx);
+	nk_label(ctx, "Damage Bullet:", NK_TEXT_LEFT);
+	const int selectedIndex = BulletClassIndex(StrBulletClass(selectedTC->DamageBullet));
+	const int newBullet = nk_combo_separator(
+		ctx, tbData->bullets, '\0', selectedIndex, BulletClassesCount(&gBulletClasses),
+		ROW_HEIGHT, nk_vec2(nk_widget_width(ctx), 8 * ROW_HEIGHT));
+	if (newBullet != selectedIndex)
+	{
+		CFREE(selectedTC->DamageBullet);
+		CSTRDUP(
+			selectedTC->DamageBullet, IndexBulletClassName(newBullet));
+		tbData->result |= EDITOR_RESULT_CHANGED_AND_RELOAD;
+	}
+	if (nk_input_is_mouse_hovering_rect(&ctx->input, bounds))
+	{
+		nk_tooltip(ctx, "Bullet type to hit player with when stepped on");
+	}
+}
+
 static void DrawTileClass(
 	struct nk_context *ctx, PicManager *pm, TileClass *tc,
 	const struct vec2i pos, const GLuint texid);
@@ -476,15 +568,15 @@ static int DoorStyleIndex(const char *style)
 }
 
 static const TileClass *GetOrAddTileClass(
-	const TileClass *base, PicManager *pm, const char *style,
+	map_t c, const TileClass *base, PicManager *pm, const char *style,
 	const color_t mask, const color_t maskAlt)
 {
 	const TileClass *styleClass = TileClassesGetMaskedTile(
-		base, style, TileClassBaseStyleType(base->Type), mask, maskAlt);
+		c, base, style, TileClassBaseStyleType(base->Type), mask, maskAlt);
 	if (styleClass == &gTileNothing)
 	{
 		styleClass = TileClassesAdd(
-			&gTileClasses, pm, base, style, TileClassBaseStyleType(base->Type),
+			c, pm, base, style, TileClassBaseStyleType(base->Type),
 			mask, maskAlt);
 	}
 	return styleClass;

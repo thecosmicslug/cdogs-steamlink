@@ -1,7 +1,7 @@
 /*
 	C-Dogs SDL
 	A port of the legendary (and fun) action/arcade cdogs.
-	Copyright (c) 2018-2020 Cong Xu
+	Copyright (c) 2018-2022 Cong Xu
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without
@@ -33,30 +33,29 @@
 #include "sys_config.h"
 
 
-TileClasses gTileClasses;
 TileClass gTileFloor = {
 	"tile", NULL, NULL, NULL, { 255, 255, 255, 255 }, { 255, 255, 255, 255 },
-	true, false, false, false, TILE_CLASS_FLOOR,
+	true, false, false, false, TILE_CLASS_FLOOR, NULL,
 };
 TileClass gTileRoom = {
 	"tile", NULL, NULL, NULL, { 255, 255, 255, 255 }, { 255, 255, 255, 255 },
-	true, false, false, true, TILE_CLASS_FLOOR,
+	true, false, false, true, TILE_CLASS_FLOOR, NULL,
 };
 TileClass gTileWall = {
 	"wall", NULL, NULL, NULL, { 255, 255, 255, 255 }, { 255, 255, 255, 255 },
-	false, true, true, false, TILE_CLASS_WALL,
+	false, true, true, false, TILE_CLASS_WALL, NULL,
 };
 TileClass gTileNothing = {
 	NULL, NULL, NULL, NULL, { 255, 255, 255, 255 }, { 255, 255, 255, 255 },
-	false, false, false, false, TILE_CLASS_NOTHING,
+	false, false, false, false, TILE_CLASS_NOTHING, NULL,
 };
 TileClass gTileExit = {
 	"exits", NULL, NULL, NULL, { 255, 255, 255, 255 }, { 255, 255, 255, 255 },
-	true, false, false, false, TILE_CLASS_FLOOR,
+	true, false, false, false, TILE_CLASS_FLOOR, NULL,
 };
 TileClass gTileDoor = {
 	"door", NULL, NULL, NULL, { 255, 255, 255, 255 }, { 255, 255, 255, 255 },
-	false, true, true, true, TILE_CLASS_DOOR,
+	false, true, true, true, TILE_CLASS_DOOR, NULL,
 };
 
 const char *TileClassTypeStr(const TileClassType t)
@@ -80,20 +79,13 @@ TileClassType StrTileClassType(const char *s)
 	return TILE_CLASS_NOTHING;
 }
 
-void TileClassesInit(TileClasses *c)
+map_t TileClassesNew(void)
 {
-	c->classes = hashmap_new();
-	c->customClasses = hashmap_new();
+	return hashmap_new();
 }
-void TileClassesClearCustom(TileClasses *c)
+void TileClassesTerminate(map_t c)
 {
-	TileClassesTerminate(c);
-	TileClassesInit(c);
-}
-void TileClassesTerminate(TileClasses *c)
-{
-	hashmap_destroy(c->classes, TileClassDestroy);
-	hashmap_destroy(c->customClasses, TileClassDestroy);
+	hashmap_destroy(c, TileClassDestroy);
 }
 void TileClassDestroy(any_t data)
 {
@@ -110,6 +102,38 @@ void TileClassTerminate(TileClass *tc)
 	CFREE(tc->Name);
 	CFREE(tc->Style);
 	CFREE(tc->StyleType);
+	CFREE(tc->DamageBullet);
+}
+
+void TileClassLoadJSON(TileClass *tc, json_t *node)
+{
+	memset(tc, 0, sizeof *tc);
+	LoadStr(&tc->Name, node, "Name");
+	JSON_UTILS_LOAD_ENUM(tc->Type, node, "Type", StrTileClassType);
+	LoadStr(&tc->Style, node, "Style");
+	LoadColor(&tc->Mask, node, "Mask");
+	LoadColor(&tc->MaskAlt, node, "MaskAlt");
+	LoadBool(&tc->canWalk, node, "CanWalk");
+	LoadBool(&tc->isOpaque, node, "IsOpaque");
+	LoadBool(&tc->shootable, node, "Shootable");
+	LoadBool(&tc->IsRoom, node, "IsRoom");
+	LoadStr(&tc->DamageBullet, node, "DamageBullet");
+}
+
+json_t *TileClassSaveJSON(const TileClass *tc)
+{
+	json_t *itemNode = json_new_object();
+	AddStringPair(itemNode, "Name", tc->Name);
+	AddStringPair(itemNode, "Type", TileClassTypeStr(tc->Type));
+	AddStringPair(itemNode, "Style", tc->Style);
+	AddColorPair(itemNode, "Mask", tc->Mask);
+	AddColorPair(itemNode, "MaskAlt", tc->MaskAlt);
+	AddBoolPair(itemNode, "CanWalk", tc->canWalk);
+	AddBoolPair(itemNode, "IsOpaque", tc->isOpaque);
+	AddBoolPair(itemNode, "Shootable", tc->shootable);
+	AddBoolPair(itemNode, "IsRoom", tc->IsRoom);
+	AddStringPair(itemNode, "DamageBullet", tc->DamageBullet);
+	return itemNode;
 }
 
 const char *TileClassBaseStyleType(const TileClassType type)
@@ -133,8 +157,9 @@ void TileClassCopy(TileClass *dst, const TileClass *src)
 	if (src->Name) CSTRDUP(dst->Name, src->Name);
 	if (src->Style) CSTRDUP(dst->Style, src->Style);
 	if (src->StyleType) CSTRDUP(dst->StyleType, TileClassBaseStyleType(src->Type));
+	if (src->DamageBullet) CSTRDUP(dst->DamageBullet, src->DamageBullet);
 }
-const TileClass *StrTileClass(const char *name)
+const TileClass *StrTileClass(map_t c, const char *name)
 {
 	if (name == NULL || strlen(name) == 0)
 	{
@@ -142,12 +167,7 @@ const TileClass *StrTileClass(const char *name)
 	}
 	LOG(LM_MAIN, LL_TRACE, "get tile class %s", name);
 	TileClass *t;
-	int error = hashmap_get(gTileClasses.customClasses, name, (any_t *)&t);
-	if (error == MAP_OK)
-	{
-		return t;
-	}
-	error = hashmap_get(gTileClasses.classes, name, (any_t *)&t);
+	const int error = hashmap_get(c, name, (any_t *)&t);
 	if (error == MAP_OK)
 	{
 		return t;
@@ -169,6 +189,7 @@ void TileClassInit(
 	{
 		CSTRDUP(t->StyleType, type);
 	}
+	if (base->DamageBullet) CSTRDUP(t->DamageBullet, base->DamageBullet);
 	t->Mask = mask;
 	t->MaskAlt = maskAlt;
 	TileClassReloadPic(t, pm);
@@ -222,15 +243,15 @@ void TileClassReloadPic(TileClass *t, PicManager *pm)
 	}
 }
 const TileClass *TileClassesGetMaskedTile(
-	const TileClass *baseClass, const char *style, const char *type,
+	map_t c, const TileClass *baseClass, const char *style, const char *type,
 	const color_t mask, const color_t maskAlt)
 {
 	char buf[256];
 	TileClassGetName(buf, baseClass, style, type, mask, maskAlt);
-	return StrTileClass(buf);
+	return StrTileClass(c, buf);
 }
 TileClass *TileClassesAdd(
-	TileClasses *c, PicManager *pm, const TileClass *baseClass,
+	map_t c, PicManager *pm, const TileClass *baseClass,
 	const char *style, const char *type,
 	const color_t mask, const color_t maskAlt)
 {
@@ -240,7 +261,7 @@ TileClass *TileClassesAdd(
 
 	char buf[CDOGS_PATH_MAX];
 	TileClassGetName(buf, t, style, type, mask, maskAlt);
-	const int error = hashmap_put(c->customClasses, buf, t);
+	const int error = hashmap_put(c, buf, t);
 	if (error != MAP_OK)
 	{
 		LOG(LM_MAIN, LL_ERROR, "failed to add tile class %s: %d", buf, error);
@@ -284,12 +305,12 @@ const Pic *TileClassGetPic(const PicManager *pm, const TileClass *tc)
 }
 
 const TileClass *TileClassesGetExit(
-	TileClasses *c, PicManager *pm, const char *style, const bool isShadow)
+	map_t c, PicManager *pm, const char *style, const bool isShadow)
 {
 	char buf[256];
 	const char *type = isShadow ? "shadow" : "normal";
 	TileClassGetName(buf, &gTileExit, style, type, colorWhite, colorWhite);
-	const TileClass *t = StrTileClass(buf);
+	const TileClass *t = StrTileClass(c, buf);
 	if (t != &gTileNothing)
 	{
 		return t;

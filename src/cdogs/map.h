@@ -22,7 +22,7 @@
 	This file incorporates work covered by the following copyright and
 	permission notice:
 
-	Copyright (c) 2013-2021 Cong Xu
+	Copyright (c) 2013-2022 Cong Xu
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without
@@ -97,6 +97,7 @@ typedef struct
 
 typedef struct
 {
+	map_t TileClasses;
 	CArray Tiles; // of Tile
 	struct vec2i Size;
 
@@ -154,6 +155,7 @@ bool MapPlaceRandomPos(
 void MapMarkAsVisited(Map *map, struct vec2i pos);
 void MapMarkAllAsVisited(Map *map);
 int MapGetExploredPercentage(Map *map);
+void MapUpdate(Map *map);
 
 typedef bool (*TileSelectFunc)(Map *, struct vec2i);
 // Find a tile around the start that satisfies a condition
