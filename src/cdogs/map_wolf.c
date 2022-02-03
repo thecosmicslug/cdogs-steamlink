@@ -44,7 +44,7 @@ CWolfMap *defaultSpearMap = NULL;
 #define WOLF_GOG_ID "1441705046"
 #define SPEAR_GOG_ID "1441705126"
 
-#define TILE_CLASS_WALL_OFFSET 62
+#define TILE_CLASS_WALL_OFFSET 63
 
 void MapWolfInit(void)
 {
@@ -520,7 +520,6 @@ int MapWolfScan(
 	int err = 0;
 	bool usedAsDefault = false;
 	CWolfMap map;
-	memset(&map, 0, sizeof map);
 	const bool loadedFromDefault = LoadDefault(&map, filename);
 	err = CWLoad(&map, filename, spearMission);
 	if (loadedFromDefault)
@@ -673,7 +672,7 @@ int MapWolfLoad(
 		&cs, &cCommon.characters, &gPlayerTemplates.CustomClasses);
 	CampaignSettingTerminate(&cCommon);
 	// Create walk-through copies of all the walls
-	for (int i = 3; i <= 64; i++)
+	for (int i = 3; i <= 65; i++)
 	{
 		TileClass *orig;
 		sprintf(buf, "%d", i);
@@ -1101,6 +1100,14 @@ static void TryLoadWallObject(
 	const char *moName = NULL;
 	switch (wall)
 	{
+	case CWWALL_GREY_BRICK_2:
+		switch (spearMission)
+		{
+		case 3:
+			moName = "wall_light";
+			break;
+		}
+		break;
 	case CWWALL_GREY_BRICK_FLAG:
 		switch (spearMission)
 		{
@@ -1111,6 +1118,7 @@ static void TryLoadWallObject(
 			moName = "wall_light";
 			break;
 		case 3:
+			moName = "wall_light";
 			break;
 		}
 		break;
@@ -1120,9 +1128,8 @@ static void TryLoadWallObject(
 		case 1:
 			moName = "hitler_portrait";
 			break;
-		case 2:
-			break;
 		case 3:
+			moName = "no_sign";
 			break;
 		}
 		break;
@@ -1132,9 +1139,8 @@ static void TryLoadWallObject(
 		case 1:
 			moName = "jail_cell";
 			break;
-		case 2:
-			break;
 		case 3:
+			moName = "wall_goo2";
 			break;
 		}
 		break;
@@ -1144,9 +1150,8 @@ static void TryLoadWallObject(
 		case 1:
 			moName = "brick_eagle";
 			break;
-		case 2:
-			break;
 		case 3:
+			moName = "swastika_relief";
 			break;
 		}
 		break;
@@ -1160,30 +1165,26 @@ static void TryLoadWallObject(
 			moName = "wall_light";
 			break;
 		case 3:
+			moName = "map";
 			break;
 		}
 		break;
 	case CWWALL_BLUE_BRICK_1:
 		switch (spearMission)
 		{
-		case 1:
-			break;
 		case 2:
 			moName = "ship_light";
 			break;
 		case 3:
+			moName = "eagle_portrait";
 			break;
 		}
 		break;
 	case CWWALL_BLUE_BRICK_2:
 		switch (spearMission)
 		{
-		case 1:
-			break;
 		case 2:
 			moName = "hitler_poster";
-			break;
-		case 3:
 			break;
 		}
 		break;
@@ -1197,6 +1198,7 @@ static void TryLoadWallObject(
 			moName = "swastika_relief";
 			break;
 		case 3:
+			moName = "swastika_relief";
 			break;
 		}
 		break;
@@ -1206,21 +1208,19 @@ static void TryLoadWallObject(
 		case 1:
 			moName = "hitler_portrait";
 			break;
-		case 2:
-			break;
 		case 3:
+			moName = "wall_light";
 			break;
 		}
 		break;
 	case CWWALL_WOOD:
 		switch (spearMission)
 		{
-		case 1:
-			break;
 		case 2:
 			moName = "wall_light";
 			break;
 		case 3:
+			moName = "hitler_poster";
 			break;
 		}
 		break;
@@ -1236,19 +1236,24 @@ static void TryLoadWallObject(
 		case 2:
 			moName = "wet_cobble";
 			break;
+		}
+		break;
+	case CWWALL_STEEL:
+		switch (spearMission)
+		{
 		case 3:
+			moName = "no_sign";
 			break;
 		}
 		break;
 	case CWWALL_RED_BRICK:
 		switch (spearMission)
 		{
-		case 1:
-			break;
 		case 2:
 			moName = "wall_chart";
 			break;
 		case 3:
+			moName = "skull_wall";
 			break;
 		}
 		break;
@@ -1262,18 +1267,15 @@ static void TryLoadWallObject(
 			moName = "wall_nuke_sign";
 			break;
 		case 3:
+			moName = "swastika_wall";
 			break;
 		}
 		break;
 	case CWWALL_PURPLE:
 		switch (spearMission)
 		{
-		case 1:
-			break;
 		case 2:
 			moName = "heer_flag";
-			break;
-		case 3:
 			break;
 		}
 		break;
@@ -1283,9 +1285,8 @@ static void TryLoadWallObject(
 		case 1:
 			moName = "coat_of_arms_flag";
 			break;
-		case 2:
-			break;
 		case 3:
+			moName = "swastika_relief";
 			break;
 		}
 		break;
@@ -1320,11 +1321,11 @@ static void TryLoadWallObject(
 				// Check if coming back from secret level
 				if (map->type == CWMAPTYPE_SOD)
 				{
-					if (missionIndex == 19)
+					if (missionIndex == 18)
 					{
 						e.Mission = 4;
 					}
-					else if (missionIndex == 20)
+					else if (missionIndex == 19)
 					{
 						e.Mission = 12;
 					}
@@ -1380,6 +1381,7 @@ static void TryLoadWallObject(
 			moName = "wall_chart";
 			break;
 		case 3:
+			moName = "wall_goo2";
 			break;
 		}
 		break;
@@ -1389,9 +1391,8 @@ static void TryLoadWallObject(
 		case 1:
 			moName = "cobble_moss";
 			break;
-		case 2:
-			break;
 		case 3:
+			moName = "wall_goo2";
 			break;
 		}
 		break;
@@ -1405,6 +1406,7 @@ static void TryLoadWallObject(
 			moName = "no_sign";
 			break;
 		case 3:
+			moName = "wall_goo2";
 			break;
 		}
 		break;
@@ -1417,19 +1419,16 @@ static void TryLoadWallObject(
 		case 2:
 			moName = "jail_cell";
 			break;
-		case 3:
-			break;
 		}
 		break;
 	case CWWALL_GREY_BRICK_3:
 		switch (spearMission)
 		{
-		case 1:
-			break;
 		case 2:
 			moName = "jail_cell_skeleton";
 			break;
 		case 3:
+			moName = "swastika_blue";
 			break;
 		}
 		break;
@@ -1443,6 +1442,7 @@ static void TryLoadWallObject(
 			moName = "no_sign";
 			break;
 		case 3:
+			moName = "skull_blue";
 			break;
 		}
 		break;
@@ -1456,6 +1456,7 @@ static void TryLoadWallObject(
 			moName = "skull_blue";
 			break;
 		case 3:
+			moName = "swastika_relief";
 			break;
 		}
 		break;
@@ -1468,8 +1469,6 @@ static void TryLoadWallObject(
 		case 2:
 			moName = "swastika_blue";
 			break;
-		case 3:
-			break;
 		}
 		break;
 	case CWWALL_BROWN_WEAVE_BLOOD_1:
@@ -1477,10 +1476,6 @@ static void TryLoadWallObject(
 		{
 		case 1:
 			moName = "bloodstain2";
-			break;
-		case 2:
-			break;
-		case 3:
 			break;
 		}
 		break;
@@ -1494,6 +1489,7 @@ static void TryLoadWallObject(
 			moName = "swastika_relief";
 			break;
 		case 3:
+			moName = "wall_light";
 			break;
 		}
 		break;
@@ -1503,21 +1499,19 @@ static void TryLoadWallObject(
 		case 1:
 			moName = "skull_blue";
 			break;
-		case 2:
-			break;
 		case 3:
+			moName = "wall_light";
 			break;
 		}
 		break;
 	case CWWALL_GREY_WALL_1:
 		switch (spearMission)
 		{
-		case 1:
-			break;
 		case 2:
 			moName = "map";
 			break;
 		case 3:
+			moName = "wall_light";
 			break;
 		}
 		break;
@@ -1526,10 +1520,6 @@ static void TryLoadWallObject(
 		{
 		case 1:
 			moName = "swastika_blue";
-			break;
-		case 2:
-			break;
-		case 3:
 			break;
 		}
 		break;
@@ -1543,6 +1533,7 @@ static void TryLoadWallObject(
 			moName = "no_sign";
 			break;
 		case 3:
+			moName = "no_sign";
 			break;
 		}
 		break;
@@ -1552,33 +1543,30 @@ static void TryLoadWallObject(
 		case 1:
 			moName = "brick_color";
 			break;
-		case 2:
-			break;
 		case 3:
+			moName = "jail_cell";
 			break;
 		}
 		break;
 	case CWWALL_GREY_WALL_2:
 		switch (spearMission)
 		{
-		case 1:
-			break;
 		case 2:
 			moName = "bulletmarks";
 			break;
 		case 3:
+			moName = "jail_cell_skeleton";
 			break;
 		}
 		break;
 	case CWWALL_BLUE_WALL:
 		switch (spearMission)
 		{
-		case 1:
-			break;
 		case 2:
 			moName = "ship_picture";
 			break;
 		case 3:
+			moName = "no_sign";
 			break;
 		}
 		break;
@@ -1592,18 +1580,18 @@ static void TryLoadWallObject(
 			moName = "hitler_poster";
 			break;
 		case 3:
+			moName = "wet_cobble";
 			break;
 		}
 		break;
 	case CWWALL_BROWN_MARBLE_1:
 		switch (spearMission)
 		{
-		case 1:
-			break;
 		case 2:
 			moName = "wall_vent";
 			break;
 		case 3:
+			moName = "wet_cobble";
 			break;
 		}
 		break;
@@ -1616,31 +1604,24 @@ static void TryLoadWallObject(
 		case 2:
 			moName = "heer_flag";
 			break;
-		case 3:
-			break;
 		}
 		break;
 	case CWWALL_BROWN_STONE_2:
 		switch (spearMission)
 		{
-		case 1:
-			break;
 		case 2:
 			moName = "swastika_relief";
 			break;
 		case 3:
+			moName = "wscreen1";
 			break;
 		}
 		break;
 	case CWWALL_BROWN_MARBLE_2:
 		switch (spearMission)
 		{
-		case 1:
-			break;
 		case 2:
 			moName = "eagle_portrait";
-			break;
-		case 3:
 			break;
 		}
 		break;
@@ -1654,6 +1635,7 @@ static void TryLoadWallObject(
 			moName = "green_relief";
 			break;
 		case 3:
+			moName = "wall_vent";
 			break;
 		}
 		break;
@@ -1667,6 +1649,7 @@ static void TryLoadWallObject(
 			moName = "scratch";
 			break;
 		case 3:
+			moName = "bulletmarks";
 			break;
 		}
 		break;
@@ -1680,6 +1663,7 @@ static void TryLoadWallObject(
 			moName = "wall_goo2";
 			break;
 		case 3:
+			moName = "hitler_poster";
 			break;
 		}
 		break;
@@ -1689,9 +1673,8 @@ static void TryLoadWallObject(
 		case 1:
 			moName = "stone_color";
 			break;
-		case 2:
-			break;
 		case 3:
+			moName = "ship_picture";
 			break;
 		}
 		break;
@@ -1703,8 +1686,6 @@ static void TryLoadWallObject(
 			break;
 		case 2:
 			moName = "scratch";
-			break;
-		case 3:
 			break;
 		}
 		break;
@@ -1718,6 +1699,7 @@ static void TryLoadWallObject(
 			moName = "iron_cross";
 			break;
 		case 3:
+			moName = "swastika_relief";
 			break;
 		}
 		break;
@@ -1731,42 +1713,45 @@ static void TryLoadWallObject(
 			moName = "wall_goo2";
 			break;
 		case 3:
+			moName = "eagle_portrait";
 			break;
 		}
 		break;
 	case CWWALL_GREY_CONCRETE_LIGHT:
 		switch (spearMission)
 		{
-		case 1:
-			break;
 		case 2:
 			moName = "wall_nuke_sign";
-			break;
-		case 3:
 			break;
 		}
 		break;
 	case CWWALL_GREY_CONCRETE_DARK:
 		switch (spearMission)
 		{
-		case 1:
-			break;
 		case 2:
 			moName = "wall_light";
 			break;
 		case 3:
+			moName = "wall_light";
 			break;
 		}
 		break;
 	case CWWALL_BLOOD_WALL:
 		switch (spearMission)
 		{
-		case 1:
-			break;
 		case 2:
 			moName = "scratch";
 			break;
 		case 3:
+			moName = "green_relief";
+			break;
+		}
+		break;
+	case CWWALL_CONCRETE:
+		switch (spearMission)
+		{
+		case 3:
+			moName = "red_relief";
 			break;
 		}
 		break;
@@ -1780,6 +1765,7 @@ static void TryLoadWallObject(
 			moName = "no_sign";
 			break;
 		case 3:
+			moName = "blue_relief";
 			break;
 		}
 		break;
@@ -1789,14 +1775,21 @@ static void TryLoadWallObject(
 		case 1:
 			moName = "stone_color";
 			break;
-		case 2:
-			break;
 		case 3:
+			moName = "wscreen2";
 			break;
 		}
 		break;
 	case CWWALL_ELEVATOR_WALL:
 		moName = "elevator_interior";
+		break;
+	case CWWALL_WHITE_PANEL:
+		switch (spearMission)
+		{
+		case 3:
+			moName = "wall_goo2";
+			break;
+		}
 		break;
 	default:
 		break;

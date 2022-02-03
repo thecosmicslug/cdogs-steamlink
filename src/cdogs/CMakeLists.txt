@@ -8,6 +8,7 @@ set(CDOGS_SOURCES
 	actor_fire.c
 	actor_placement.c
 	actors.c
+	aheasing/easing.c
 	ai.c
 	ai_context.c
 	ai_coop.c
@@ -76,6 +77,7 @@ set(CDOGS_SOURCES
 	map_object.c
 	map_static.c
 	map_wolf.c
+	material.c
 	mathc/mathc.c
 	mission.c
 	mission_convert.c
@@ -117,6 +119,7 @@ set(CDOGS_HEADERS
 	actor_fire.h
 	actor_placement.h
 	actors.h
+	aheasing/easing.h
 	ai.h
 	ai_context.h
 	ai_coop.h
@@ -185,6 +188,7 @@ set(CDOGS_HEADERS
 	map_object.h
 	map_static.h
 	map_wolf.h
+	material.h
 	mathc/mathc.h
 	mission.h
 	mission_convert.h

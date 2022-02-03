@@ -22,7 +22,7 @@
 	This file incorporates work covered by the following copyright and
 	permission notice:
 
-	Copyright (c) 2013-2016, 2018-2021 Cong Xu
+	Copyright (c) 2013-2016, 2018-2022 Cong Xu
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without
@@ -55,6 +55,7 @@
 #include "algorithms.h"
 #include "blit.h"
 #include "config.h"
+#include "door.h"
 #include "draw/draw.h"
 #include "draw/draw_actor.h"
 #include "draw/drawtools.h"
@@ -169,9 +170,9 @@ static void DrawChatters(
 	DrawBuffer *b, const struct vec2i offset, const Tile *t,
 	const struct vec2i pos, const bool useFog);
 static void DrawExtra(
-	DrawBuffer *b, struct vec2i offset, GrafxDrawExtra *extra);
+	DrawBuffer *b, struct vec2i offset, const DrawBufferArgs *args);
 
-void DrawBufferDraw(DrawBuffer *b, struct vec2i offset, GrafxDrawExtra *extra)
+void DrawBufferDraw(DrawBuffer *b, struct vec2i offset, const DrawBufferArgs *args)
 {
 	// First draw the floor tiles (which do not obstruct anything)
 	DrawTiles(b, offset, DrawFloor);
@@ -181,7 +182,7 @@ void DrawBufferDraw(DrawBuffer *b, struct vec2i offset, GrafxDrawExtra *extra)
 	DrawTiles(b, offset, DrawWallsAndThings);
 	// Draw things that are above everything
 	DrawTiles(b, offset, DrawThingsAbove);
-	if (ConfigGetBool(&gConfig, "Graphics.ShowHUD"))
+	if (args->HUD)
 	{
 		// Draw objective highlights, for visible and always-visible objectives
 		DrawTiles(b, offset, DrawObjectiveHighlights);
@@ -189,10 +190,7 @@ void DrawBufferDraw(DrawBuffer *b, struct vec2i offset, GrafxDrawExtra *extra)
 		DrawTiles(b, offset, DrawChatters);
 	}
 	// Draw editor-only things
-	if (extra)
-	{
-		DrawExtra(b, offset, extra);
-	}
+	DrawExtra(b, offset, args);
 }
 
 static void DrawFloor(
@@ -228,7 +226,6 @@ static void DrawThingsBelow(
 	CA_FOREACH_END()
 }
 
-#define WALL_OFFSET_Y (-12)
 static void DrawWallsAndThings(
 	DrawBuffer *b, const struct vec2i offset, const Tile *t,
 	const struct vec2i pos, const bool useFog)
@@ -240,21 +237,13 @@ static void DrawWallsAndThings(
 			t, t->Class->Pic, svec2i_add(pos, svec2i(0, WALL_OFFSET_Y)),
 			useFog);
 	}
-	else if (
-		t->Class->Type == TILE_CLASS_DOOR && t->ClassAlt && t->ClassAlt->Pic)
+	else if (t->Class->Type == TILE_CLASS_DOOR)
 	{
-		// Drawing doors
-		// Doors may be offset; vertical doors are drawn centered
-		// horizontal doors are bottom aligned
-		struct vec2i doorPos = pos;
-		const Pic *pic = t->ClassAlt->Pic;
-		doorPos.x += (TILE_WIDTH - pic->size.x) / 2;
-		if (pic->size.y > 16)
+		const color_t mask = GetLOSMask(t, useFog);
+		if (!ColorEquals(mask, colorTransparent))
 		{
-			doorPos.y += TILE_HEIGHT - (pic->size.y % TILE_HEIGHT);
+			DoorDraw(&t->Door, pos, mask);
 		}
-		DrawLOSPic(
-			t, pic, svec2i_add(doorPos, svec2i(0, WALL_OFFSET_Y)), useFog);
 	}
 
 	// Draw the items that are in LOS
@@ -465,17 +454,20 @@ static void DrawGuideImage(
 	const DrawBuffer *b, const Pic *guideImage, const uint8_t alpha);
 static void DrawObjectNames(DrawBuffer *b, const struct vec2i offset);
 static void DrawExtra(
-	DrawBuffer *b, struct vec2i offset, GrafxDrawExtra *extra)
+	DrawBuffer *b, struct vec2i offset, const DrawBufferArgs *args)
 {
 	// Draw guide image
-	if (!PicIsNone(extra->guideImage) && extra->guideImageAlpha > 0)
+	if (args->GuideImage && !PicIsNone(args->GuideImage) && args->GuideImageAlpha > 0)
 	{
-		DrawGuideImage(b, extra->guideImage, extra->guideImageAlpha);
+		DrawGuideImage(b, args->GuideImage, args->GuideImageAlpha);
 	}
-	// Draw pickups, in case they are obscured by walls
-	DrawPickups(b, &gMap, offset);
-	DrawEditorTiles(b, &gMap, offset);
-	DrawObjectNames(b, offset);
+	if (args->Editor)
+	{
+		// Draw pickups, in case they are obscured by walls
+		DrawPickups(b, &gMap, offset);
+		DrawEditorTiles(b, &gMap, offset);
+		DrawObjectNames(b, offset);
+	}
 }
 
 static void DrawPickups(

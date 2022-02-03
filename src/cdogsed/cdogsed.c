@@ -151,16 +151,18 @@ static void MakeBackground(const bool changedMission)
 		ec.camera = Vec2CenterOfTile(focusTile);
 	}
 
-	GrafxDrawExtra extra;
-	extra.guideImage = &brush.GuideImagePic;
-	extra.guideImageAlpha = brush.GuideImageAlpha;
+	DrawBufferArgs args;
+	memset(&args, 0, sizeof args);
+	args.Editor = true;
+	args.GuideImage = &brush.GuideImagePic;
+	args.GuideImageAlpha = brush.GuideImageAlpha;
 
 	DrawBufferTerminate(&sDrawBuffer);
 	ClearScreen(ec.g);
 	DrawBufferInit(&sDrawBuffer, svec2i(X_TILES, Y_TILES), ec.g);
 	GrafxMakeBackground(
 		ec.g, &sDrawBuffer, &gCampaign, &gMission, &gMap, tintNone, true,
-		ec.camera, &extra);
+		ec.camera, &args);
 }
 
 // Returns whether a redraw is required
@@ -190,10 +192,12 @@ static void Display(HandleInputResult result)
 			MakeBackground(false);
 		}
 
-		GrafxDrawExtra extra;
-		extra.guideImage = &brush.GuideImagePic;
-		extra.guideImageAlpha = brush.GuideImageAlpha;
-		GrafxDrawBackground(ec.g, &sDrawBuffer, tintNone, ec.camera, &extra);
+		DrawBufferArgs args;
+		memset(&args, 0, sizeof args);
+		args.Editor = true;
+		args.GuideImage = &brush.GuideImagePic;
+		args.GuideImageAlpha = brush.GuideImageAlpha;
+		GrafxDrawBackground(ec.g, &sDrawBuffer, tintNone, ec.camera, &args);
 		BlitClearBuf(ec.g);
 
 		// Draw brush highlight tiles
@@ -1259,7 +1263,6 @@ int main(int argc, char *argv[])
 
 	gConfig = ConfigLoad(GetConfigFilePath(CONFIG_FILE));
 	PicManagerInit(&gPicManager);
-	TileClassesInit(&gTileClasses);
 	// Hardcode config settings
 	ConfigGet(&gConfig, "Graphics.ScaleFactor")->u.Int.Value = 2;
 	ConfigGet(&gConfig, "Graphics.ScaleMode")->u.Enum.Value = SCALE_MODE_NN;
@@ -1351,7 +1354,6 @@ int main(int argc, char *argv[])
 	DrawBufferTerminate(&sDrawBuffer);
 	GraphicsTerminate(ec.g);
 	CharSpriteClassesTerminate(&gCharSpriteClasses);
-	TileClassesTerminate(&gTileClasses);
 	PicManagerTerminate(&gPicManager);
 	FontTerminate(&gFont);
 	PlayerTemplatesTerminate(&gPlayerTemplates);

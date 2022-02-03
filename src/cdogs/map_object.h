@@ -105,6 +105,8 @@ typedef struct
 	int Flags;
 	bool DrawBelow;
 	bool DrawAbove;
+	char *FootstepSound;
+	color_t FootprintMask;
 	MapObjectType Type;
 	union
 	{

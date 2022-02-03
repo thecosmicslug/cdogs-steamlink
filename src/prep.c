@@ -22,7 +22,7 @@
 	This file incorporates work covered by the following copyright and
 	permission notice:
 
-	Copyright (c) 2013-2018, 2020-2021 Cong Xu
+	Copyright (c) 2013-2018, 2020-2022 Cong Xu
 	All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without
@@ -75,6 +75,7 @@
 
 #include "briefing_screens.h"
 #include "game.h"
+#include "loading_screens.h"
 #include "namegen.h"
 #include "password.h"
 #include "player_select_menus.h"
@@ -207,6 +208,7 @@ static void NumPlayersTerminate(GameLoopData *data)
 static void NumPlayersOnEnter(GameLoopData *data)
 {
 	UNUSED(data);
+	LoadingScreenDraw(&gLoadingScreen, "Loading...", 1.0f);
 	MusicPlayFromChunk(
 		&gSoundDevice.music, MUSIC_BRIEFING,
 		&gCampaign.Setting.CustomSongs[MUSIC_BRIEFING]);
